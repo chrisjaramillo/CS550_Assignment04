@@ -34,17 +34,18 @@ def AC3(csp):
     # the current set of domains to one called curr_domains.
     # All work should be done on curr_domains.
     csp.support_pruning()
+
+    # Write code here.  Write auxillary function revise as well
     q = [(Xi, Xk) for Xi in csp.vars for Xk in csp.neighbors[Xi]]
-    while not q:
+    while q:
         Xi, Xj = q.pop()
-        if revise(self, Xi, Xj):
+        if revise(csp, Xi, Xj):
             if len(csp.curr_domains[Xi]) == 0:
                 return False
             else:
                 for Xk in csp.neighbors[Xi]:
                     if Xk != Xj:
                         q.append((Xk, Xi))
-    # Write code here.  Write auxillary function revise as well
     return True
 
 def revise(csp, Xi, Xj):
@@ -53,7 +54,7 @@ def revise(csp, Xi, Xj):
     
     # Write code to check revisions, use csp.prune to remove values from
     # a variable.
-    for x in csp.curr_domains[Xi]:
+    for x in csp.curr_domains[Xi][:]:
         if every(lambda y: not csp.constraints(Xi,x,Xj,y), csp.curr_domains[Xj]):
             csp.prune(Xi,x)
             revised = True
