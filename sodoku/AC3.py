@@ -36,16 +36,19 @@ def AC3(csp):
     csp.support_pruning()
 
     # Write code here.  Write auxillary function revise as well
-    q = [(Xi, Xk) for Xi in csp.vars for Xk in csp.neighbors[Xi]]
-    while q:
-        Xi, Xj = q.pop()
+    queue = []
+    for x in csp.vars:
+        for y in csp.neighbors[x]:
+            queue.append((x,y))
+    while len(queue) != 0:
+        Xi, Xj = queue.pop()
         if revise(csp, Xi, Xj):
             if len(csp.curr_domains[Xi]) == 0:
                 return False
             else:
                 for Xk in csp.neighbors[Xi]:
                     if Xk != Xj:
-                        q.append((Xk, Xi))
+                        queue.append((Xk, Xi))
     return True
 
 def revise(csp, Xi, Xj):
@@ -54,8 +57,12 @@ def revise(csp, Xi, Xj):
     
     # Write code to check revisions, use csp.prune to remove values from
     # a variable.
-    for x in csp.curr_domains[Xi][:]:
-        if every(lambda y: not csp.constraints(Xi,x,Xj,y), csp.curr_domains[Xj]):
+    for x in csp.curr_domains[Xi]:
+        holds = False
+        for y in csp.curr_domains[Xj]:
+            if csp.constraints(Xi, x, Xj, y):
+                holds = True
+        if not holds:
             csp.prune(Xi,x)
             revised = True
     return revised
